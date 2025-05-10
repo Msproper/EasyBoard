@@ -1,0 +1,1 @@
+cd easyboard-yjs && npx y-websocket HOST=localhost PORT=5555 

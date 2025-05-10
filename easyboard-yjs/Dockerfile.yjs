@@ -1,0 +1,13 @@
+FROM node:16
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+
+# Указываем явный хост и порт (ключевое исправление!)
+ENV HOST=0.0.0.0
+ENV PORT=1234
+
+EXPOSE 1234
+CMD ["npx", "y-websocket", "--host", "0.0.0.0", "--port", "1234"]

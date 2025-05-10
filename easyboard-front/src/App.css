@@ -1,0 +1,13 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import 'tldraw/tldraw.css';
+
+/* Пример: Изменение цвета панели инструментов */
+.tl-toolbar {
+  background: #4f46e5 !important; /* Фиолетовый */
+}
+
+/* Пример: Скрытие водяного знака */
+.tl-watermark {
+  display: none !important;
+}

@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  # PostgreSQL
+  postgres:
+    image: postgres:13
+    container_name: easyboard-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: user_db2
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - easyboard-network
+
+  # Redis
+  redis:
+    image: redis:6
+    container_name: easyboard-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - easyboard-network
+
+  # Spring Boot Backend
+  backend:
+    build:
+      context: ./easyboard-back
+      dockerfile: Dockerfile.backend
+    container_name: easyboard-backend
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/user_db2
+      SPRING_REDIS_HOST: redis
+      SPRING_PROFILES_ACTIVE: prod
+    ports:
+      - "8080:8080"
+    networks:
+      - easyboard-network
+
+  # Frontend (React + Vite)
+  frontend:
+    build:
+      context: ./easyboard-front
+      dockerfile: Dockerfile.frontend
+    container_name: easyboard-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - easyboard-network
+
+  # YJS Server
+  yjs:
+    build:
+      context: ./easyboard-yjs
+      dockerfile: Dockerfile.yjs
+    container_name: easyboard-yjs
+    ports:
+      - "1234:1234"
+    networks:
+      - easyboard-network
+
+  # Nginx
+  nginx:
+    image: nginx:1.21
+    container_name: easyboard-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - frontend
+      - backend
+      - yjs
+    networks:
+      - easyboard-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  easyboard-network:
+    driver: bridge

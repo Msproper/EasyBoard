@@ -1,0 +1,1 @@
+export const inviteStatusTypes = {PENDING:"PENDING",ACCEPTED:"ACCEPTED", DECLINED:"DECLINED", BANNED:"BANNED" }

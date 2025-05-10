@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="9bec5f5b-1787-4ac4-ae79-eb672fcdea15" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/auth/DetailsRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/board/BoardRequestDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/board/BoardResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/exception/DuplicateInviteException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/exception/HandshakeErrorException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/exception/NotFoundException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/exception/PermissionDeniedException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/room/InviteDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/controller/BoardController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/controller/FileController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/controller/GlobalSocketController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/controller/InviteController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/controller/InviteWSController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/controller/UserController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/enums/InviteStatus.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/enums/PermissionLevel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/enums/SearchSort.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/enums/UpdateType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/model/BoardMember.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/model/BoardModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/model/BoardUpdate.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/model/UsersDetails.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/redis/ListenerConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/redis/RedisConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/redis/RoomMessageListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/redis/model/BoardMember.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/redis/model/Invite.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/redis/model/Room.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/redis/redisRepository/UserStatusRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/redis/redisRepository/UserStatusRepositoryImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/repository/BoardRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/repository/InviteRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/service/BoardService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/service/FileService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/service/InviteService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/service/RoomService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/websockets/JwtChannelInterceptor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/public/favicon.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/public/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/public/logo192.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/public/logo512.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/public/manifest.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/public/robots.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/src/App.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/src/App.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/src/App.test.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/src/Form.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/src/Login.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/src/index.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/src/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/src/logo.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/src/reportWebVitals.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/myreactapp/src/setupTests.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/AuthDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/ChatDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/RegistrationDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/SuccessResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/UserInfoResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/UserInfoResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/auth/SignUpRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/auth/SignUpRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/auth/UpdateResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/auth/UpdateResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/exception/ValidationRuntimeException.java" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/DTO/exception/ValidationRuntimeException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/controller/ChatController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/model/ChatModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/model/ChatNotification.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/model/MessageModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/model/MessageStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/model/MessageType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/model/Role.java" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/enums/Role.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/model/UserModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/model/UserModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/repository/ChatRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/repository/UserDetailsRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/repository/MessageRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/repository/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/security/AuthenticationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/security/AuthenticationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/security/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/security/JwtAuthenticationFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/security/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/security/JwtService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/security/SecurityConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/security/SecurityConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/service/ChatService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/websockets/WebSocketConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/java/com/easygame/easygame/websockets/WebSocketConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/resources/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/resources/static/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/main/resources/static/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/main/resources/static/js/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/test/java/com/easygame/easygame/repositories/UserRepositoryTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/test/java/com/easygame/easygame/repositories/UserRepositoryTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easyboard-back/src/test/java/com/easygame/easygame/services/UserServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/easyboard-back/src/test/java/com/easygame/easygame/services/UserServiceTest.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/easyboard-back" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 4
+}]]></component>
+  <component name="ProjectId" id="2wtgwwsmNsdWzoSif1yNz5L4ByE" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9bec5f5b-1787-4ac4-ae79-eb672fcdea15" name="Changes" comment="" />
+      <created>1746866527871</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1746866527871</updated>
+    </task>
+    <servers />
+  </component>
+</project>

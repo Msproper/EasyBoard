@@ -1,0 +1,10 @@
+{
+  "main": "server.js",
+  "scripts": {
+    "start": "npx y-websocket"
+  },
+  "dependencies": {
+    "@y/websocket-server": "^0.1.1",
+    "y-websocket": "^3.0.0"
+  }
+}
