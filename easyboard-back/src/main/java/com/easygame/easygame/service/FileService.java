@@ -19,21 +19,16 @@ public class FileService {
     private String uploadDir;  // Путь к папке для хранения файлов
 
     public String saveFile(MultipartFile file) throws IOException {
-        // Генерация уникального имени файла (например, по времени)
         String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
 
-        // Формируем путь к файлу
         Path path = Paths.get(uploadDir, filename);
 
-        // Проверка, существует ли директория
         if (!Files.exists(path.getParent())) {
-            Files.createDirectories(path.getParent());  // Если директория не существует, создаем её
+            Files.createDirectories(path.getParent());
         }
-
-        // Сохраняем файл в файловую систему
         Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
-        return filename;  // Возвращаем имя файла
+        return filename;
     }
 
 

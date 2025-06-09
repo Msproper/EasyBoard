@@ -7,18 +7,23 @@ import {
     defaultUserPreferences,
     getUserPreferences,
     setUserPreferences,
-    react
+    react,
+    loadSnapshot,
+    getSnapshot
   } from "tldraw"
   import { useEffect, useMemo, useState } from "react"
   import { YKeyValue } from "y-utility/y-keyvalue"
   import { WebsocketProvider } from "y-websocket"
   import * as Y from "yjs"
+  import { useSaveSnapshotMutation } from "@/api/board/boardApi"
+  import { useGetSnapshotQuery } from "@/api/board/boardApi"
   
   export function useYjsStore({
     roomId,
     hostUrl,
     shapeUtils = []
   }) {
+    const [saveSnapshot] = useSaveSnapshotMutation()
     const [store] = useState(() => {
       const store = createTLStore({
         shapeUtils: [...defaultShapeUtils, ...shapeUtils]
@@ -44,8 +49,23 @@ import {
         room: new WebsocketProvider(hostUrl, roomId, yDoc, { connect: true })
       }
     }, [hostUrl, roomId])
+
+    const sendSnapshot = async () => {
+      const snapshot = getSnapshot(store)
+      try {
+        await saveSnapshot({
+          id: 1,
+          body: {data: JSON.stringify(snapshot)}
+        }).unwrap()
+        console.log("Snapshot saved successfully")
+      } catch (e) {
+        console.error("Error saving snapshot", e)
+      }
+    }
+    
   
     useEffect(() => {
+
       setStoreWithStatus({ status: "loading" })
   
       const unsubs = []
@@ -73,7 +93,7 @@ import {
                   yStore.delete(record.id)
                 })
               })
-            }, // only sync user's document changes
+            }, 
             { source: "user", scope: "document" }
           )
         )
@@ -182,13 +202,12 @@ import {
         const handleMetaUpdate = () => {
           const theirSchema = meta.get("schema")
           if (!theirSchema) {
-            throw new Error("No schema found in the yjs doc")
+            throw new Error("В документе yjs не найдена схема")
           }
-          // If the shared schema is newer than our schema, the user must refresh
           const newMigrations = store.schema.getMigrationsSince(theirSchema)
   
           if (!newMigrations.ok || newMigrations.value.length > 0) {
-            window.alert("The schema has been updated. Please refresh the page.")
+            window.alert("Схема была обновлена. Пожалуйста, обновите страницу.")
             yDoc.destroy()
           }
         }
@@ -202,11 +221,12 @@ import {
         // Initialize the store with the yjs doc records—or, if the yjs doc
         // is empty, initialize the yjs doc with the default store records.
         if (yStore.yarray.length) {
+          console.log(yStore.yarray)
           // Replace the store records with the yjs doc records
           const ourSchema = store.schema.serialize()
           const theirSchema = meta.get("schema")
           if (!theirSchema) {
-            throw new Error("No schema found in the yjs doc")
+            throw new Error("В документе yjs не найдена схема")
           }
   
           const records = yStore.yarray.toJSON().map(({ val }) => val)
@@ -218,7 +238,7 @@ import {
           if (migrationResult.type === "error") {
             // if the schema is newer than ours, the user must refresh
             console.error(migrationResult.reason)
-            window.alert("The schema has been updated. Please refresh the page.")
+            window.alert("Схема была обновлена. Пожалуйста, обновите страницу.")
             return
           }
   
@@ -239,14 +259,15 @@ import {
             store: migrationResult.value,
             schema: ourSchema
           })
+          
+          sendSnapshot()
         } else {
-          // Create the initial store records
-          // Sync the store records to the yjs doc
           yDoc.transact(() => {
             for (const record of store.allRecords()) {
               yStore.set(record.id, record)
             }
             meta.set("schema", store.schema.serialize())
+            sendSnapshot()
           })
         }
   
@@ -260,7 +281,6 @@ import {
       let hasConnectedBefore = false
   
       function handleStatusChange({ status }) {
-        // If we're disconnected, set the store status to 'synced-remote' and the connection status to 'offline'
         if (status === "disconnected") {
           setStoreWithStatus({
             store,

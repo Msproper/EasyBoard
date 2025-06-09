@@ -1,48 +1,48 @@
-import React, { useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useSelector, useDispatch } from 'react-redux';
+import { AnimatePresence, motion } from 'framer-motion';
+import { removeNotification } from '@/api/notification/notificationSlice';
 import { X } from 'lucide-react';
+import { useEffect } from 'react';
 
-
-export const Notification = ({
-  message,
-  type,
-  onClose,
-  duration = 10000,
-}) => {
+export const Notification = () => {
+  const notifications = useSelector((state) => state.notifications);
+  const dispatch = useDispatch();
+  
   useEffect(() => {
-    const timer = setTimeout(handleClose, duration);
-    return () => clearTimeout(timer);
-  }, [onClose, duration]);
+    const timers = notifications.map((n) =>
+      setTimeout(() => dispatch(removeNotification(n.id)), 4000)
+    );
+    return () => timers.forEach(clearTimeout);
+  }, [notifications, dispatch]);
 
-  const handleClose = () => {
-    setTimeout(() => onClose(), 300); // Даем время для анимации
-  };
-
-
+  if (notifications == null) return <></>
   return (
-    <AnimatePresence>
-      <motion.div
-      layout
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -50 }}
-        transition={{ type: 'spring', damping: 25 , duration:300}}
-        className={`fixed top-4 left-[35%] z-50 rounded-lg ${type} max-w-md w-full`}
-        role="alert"
-      >
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center">
-            <p className="text-white font-medium">{message}</p>
-          </div>
-          <button
-            onClick={handleClose}
-            className="text-white hover:text-gray-600 transition-colors"
-            aria-label="Close"
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2">
+      <AnimatePresence>
+        {notifications.map((n) => (
+          <motion.div
+            key={n.id}
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            transition={{ type: 'spring', damping: 25 }}
+            className={`rounded-lg ${n.type} max-w-md w-full shadow-lg`}
+            role="alert"
           >
-            <X ></X>
-          </button>
-        </div>
-      </motion.div>
-    </AnimatePresence>
+            <div className="flex items-center justify-between p-4">
+              <p className="text-white font-medium">{n.message}</p>
+              <button
+                onClick={() => dispatch(removeNotification(n.id))}
+                className="text-white hover:text-gray-300 transition-colors"
+                aria-label="Close"
+              >
+                <X />
+              </button>
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </div>
   );
 };
+

@@ -25,21 +25,30 @@ export default function CreateBoardDialog() {
       title: "",
       description: "",
       isPublic: true,
+      imageFile: null,
     },
     onSubmit: async (values) => {
       try {
-        await createBoard({
+        const formData = new FormData();
+        const boardInfo = {
           title: values.title,
           description: values.description,
           isPublic: values.isPublic,
-        }).unwrap();
+        };
+        formData.append("data", new Blob([JSON.stringify(boardInfo)], { type: "application/json" }));
+    
+        if (values.imageFile) {
+          formData.append("photo", values.imageFile);
+        }
+    
+        await createBoard(formData).unwrap();
         formik.resetForm();
         setPreviewUrl(null);
         setOpen(false);
       } catch (err) {
         console.error("Ошибка при создании доски:", err);
       }
-    },
+    }
   });
 
   const handleImageChange = (e) => {
@@ -53,7 +62,7 @@ export default function CreateBoardDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Card className="cursor-pointer hover:shadow-lg transition-shadow flex items-center justify-center h-40">
+        <Card className="group cursor-pointer rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-lg transition-shadow duration-300">
           <CardContent className="flex flex-col items-center justify-center p-4 text-center">
             <Plus className="w-8 h-8 mb-2 text-gray-500" />
             <span className="text-sm text-gray-700">Новая доска</span>

@@ -14,7 +14,6 @@ public interface InviteRepository extends CrudRepository<Invite, String> {
     default boolean existsActiveInvite(String sender, String boardId) {
         String id = Invite.generateId(sender, boardId);
         Optional<Invite> invite = findById(id);
-        System.out.println(id);
         return invite.isPresent() &&
                 invite.get().getStatus() == InviteStatus.PENDING;
     }

@@ -3,6 +3,7 @@ package com.easygame.easygame.controller;
 
 import com.easygame.easygame.DTO.board.BoardRequestDTO;
 import com.easygame.easygame.DTO.board.BoardResponseDTO;
+import com.easygame.easygame.DTO.board.SnapshotDTO;
 import com.easygame.easygame.DTO.exception.ValidationRuntimeException;
 import com.easygame.easygame.enums.SearchSort;
 import com.easygame.easygame.service.BoardService;
@@ -13,9 +14,11 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -28,12 +31,15 @@ public class BoardController {
     private final BoardService boardService;
 
     @Operation(summary = "Создание доски")
-    @PostMapping("/create")
-    public ResponseEntity<?> createBlankBoard(@RequestBody @Valid BoardRequestDTO boardRequestDTO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) throw new ValidationRuntimeException(bindingResult);
-        BoardResponseDTO boardResponseDTO = boardService.create(boardRequestDTO);
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createBlankBoard(
+            @RequestPart("data") @Valid BoardRequestDTO boardRequestDTO,
+            @RequestPart(value = "photo", required = false) MultipartFile photo
+    ) {
+        BoardResponseDTO boardResponseDTO = boardService.create(boardRequestDTO, photo);
         return new ResponseEntity<>(boardResponseDTO, HttpStatus.CREATED);
     }
+
 
     @Operation(summary = "Получение досок по текущему пользователю")
     @GetMapping("/")
@@ -66,6 +72,19 @@ public class BoardController {
     ) {
         List<BoardResponseDTO> boards = boardService.searchBoards(query, limit, page, sort);
         return ResponseEntity.ok(boards);
+    }
+
+    @PostMapping("/save/{id}")
+    public ResponseEntity<?> saveSnapshot(@PathVariable Long id, @RequestBody SnapshotDTO snapshotDTO){
+        boardService.saveSnapshot(id,snapshotDTO);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+    @GetMapping("/snapshot/{id}")
+    public ResponseEntity<?> getSnapshot(@PathVariable Long id){
+        SnapshotDTO snapshotDTO = boardService.getSnapshot(id);
+        return new ResponseEntity<>(snapshotDTO, HttpStatus.OK);
     }
 }
 

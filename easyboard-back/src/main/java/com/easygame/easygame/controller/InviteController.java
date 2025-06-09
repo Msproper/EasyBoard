@@ -1,7 +1,7 @@
 package com.easygame.easygame.controller;
 
 import com.easygame.easygame.DTO.room.InviteDTO;
-import com.easygame.easygame.service.RoomService;
+import com.easygame.easygame.service.InviteService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,7 @@ import java.security.Principal;
 @RequestMapping("/api/invites")
 @Tag(name = "АPI для создания комнат")
 public class InviteController {
-    private final RoomService roomService;
+    private final InviteService roomService;
 
     @PostMapping("/{boardId}/sendRequest")
     public ResponseEntity<?> handleGetInvite(

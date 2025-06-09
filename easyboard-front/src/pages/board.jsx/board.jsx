@@ -6,28 +6,13 @@ import {
 	DefaultToolbar,DefaultToolbarContent
   } from 'tldraw'
 import 'tldraw/tldraw.css'
-import { Home} from 'lucide-react'
+import { DashboardButton } from '@/components/tools/DashboardButton'
 
-const HOST_URL = 'ws://localhost/socket.io'
+const HOST_URL =  import.meta.env.MODE === 'development'
+? 'ws://localhost:1234'
+: 'ws://localhost/socket.io'
 
-function DashboardButton() {
-	const navigate = useNavigate()
-	const handleClick = () => {
-		navigate('/dashboard', {replace:true})
-	}
-	
-	return (
-		<button
-		onClick={handleClick}
-		className='tlui-toolbar__button pl-3 pr-3'
-		title="Вернуться в дашборд"
-		>
-			<div className="tlui-toolbar__button__icon">
-				<Home />
-			</div>
-		</button>
-	)
-}
+
 
 function CustomToolbar() {
 	return (

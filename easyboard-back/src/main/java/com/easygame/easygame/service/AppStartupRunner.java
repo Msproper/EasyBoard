@@ -14,7 +14,5 @@ public class AppStartupRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        System.out.println("Redis host: " + redisHost);
-        System.out.println("Redis port: " + redisPort);
     }
 }

@@ -17,7 +17,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @RestController
-@RequestMapping("/files")
+@RequestMapping("/api/files")
 public class FileController {
 
     @Autowired
@@ -28,7 +28,7 @@ public class FileController {
 
     @PostMapping("/upload")
     public ResponseEntity<?> fdasd(){
-        System.out.println("YEAS");
+
         return ResponseEntity.ok("Photo uploaded successfully");
     }
 

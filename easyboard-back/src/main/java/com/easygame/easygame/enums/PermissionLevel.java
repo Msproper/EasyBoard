@@ -1,7 +1,9 @@
 package com.easygame.easygame.enums;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@Getter
 @RequiredArgsConstructor
 public enum PermissionLevel {
     ADMIN(3),

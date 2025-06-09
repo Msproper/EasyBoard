@@ -50,8 +50,8 @@ export const Searcher = () => {
         >
           <option value="TITLE_ASC">По названию (А-Я)</option>
           <option value="TITLE_DESC">По названию (Я-А)</option>
-          <option value="CREATEDAT_ASC">По дате (сначала старые)</option>
-          <option value="CREATEDAT_DESC">По дате (сначала новые)</option>
+          <option value="CREATEAT_ASC">По дате (сначала старые)</option>
+          <option value="CREATEAT_DESC">По дате (сначала новые)</option>
         </select>
       </div>
 

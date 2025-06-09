@@ -67,7 +67,6 @@ public class UserService {
         saveDetails(userDetails);
     }
 
-
     public void saveAvatar(MultipartFile file){
         try{
             var currentUser = getCurrentUser();

@@ -9,6 +9,8 @@ import com.easygame.easygame.model.UserModel;
 import com.easygame.easygame.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -48,7 +50,6 @@ public class AuthenticationService {
                 .build();
 
         userService.create(user);
-
         var cookie = createCookie(jwtService.generateRefreshToken(user));
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
@@ -60,10 +61,10 @@ public class AuthenticationService {
     private ResponseCookie createCookie(String refreshToken){
         return ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-//                .secure(true) // Только для HTTPS
+                .secure(true)
                 .path("/")
                 .maxAge(jwtService.getRefreshExpiration() / 1000) // В секундах
-                .sameSite("Strict") // Защита от CSRF
+                .sameSite("Strict")
                 .build();
 
     }

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
+import org.springframework.data.redis.core.index.Indexed;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,5 +24,6 @@ public class Room {
 
     private String ownerUsername;
     private Map<String, PermissionLevel> members = new HashMap<>();
-    private UUID sharedAccessToken;
+    @Indexed
+    private String uuid;
 }

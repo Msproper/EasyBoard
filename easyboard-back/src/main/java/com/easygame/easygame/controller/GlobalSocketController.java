@@ -24,18 +24,9 @@ public class GlobalSocketController {
         if (event != null){
             String username = event.getUser().getName();
             statusRepo.setUserOnline(username);
-            System.out.println(simpUserRegistry.getUsers());
         }
     }
 
-//    @EventListener
-//    public void handleWebSocketDisconnect(SessionDisconnectEvent event) {
-//        if (event != null) {
-//            System.out.println("\n\n\n"+event+"\n\n\n");
-//            String username = event.getUser().getName();
-//            statusRepo.setUserOffline(username);
-//        }
-//    }
 
 }
 

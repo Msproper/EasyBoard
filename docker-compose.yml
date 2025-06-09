@@ -51,6 +51,8 @@ services:
       context: ./easyboard-front
       dockerfile: Dockerfile.frontend
     container_name: easyboard-frontend
+    environment:
+      - VITE_MODE=PROD
     ports:
       - "3000:3000"
     depends_on:

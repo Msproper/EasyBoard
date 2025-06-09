@@ -11,6 +11,7 @@ public class DetailsRequest {
     private String name;
     private String surname;
     private String status;
+    private String dateOfBirth;
 
     @Override
     public String toString() {

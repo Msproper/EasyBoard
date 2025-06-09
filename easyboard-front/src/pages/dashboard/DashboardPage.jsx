@@ -1,6 +1,6 @@
 
 
-import Sidebar from "@/components/sidebar/sidebar";
+import Sidebar from "@/components/Sidebar/sidebar";
 import { Searcher } from "@/components/Search/Search";
 import { LayoutList, Star, Search, Users} from 'lucide-react';
 import { useState, useContext, useEffect } from "react";
@@ -11,6 +11,7 @@ import UserBoards from "@/components/UserBoards/UserBoards";
 import { subscribeToChannel } from "@/api/socket/subscribeToChannel";
 import { store } from "@/reduxStore";
 import { useSelector } from "react-redux";
+import GroupsPage from "../groups/GroupsPage";
 
 
 export const categories = [
@@ -28,22 +29,6 @@ const DashboardPage = () => {
   const [select, onSelect] = useState(searchParams.get('category') || 'my')
   const {showAlert} = useContext(AppContext)
 
-  // useEffect(() => {
-  //   console.log(connected)
-  //   if (connected){
-  //     const onInviteResponse = (data) => {
-        
-  //     };
-    
-  //     const subscription = subscribeToChannel(store, '/user/queue/global/invites', onInviteResponse);
-    
-  //     return () => {
-  //       subscription.unsubscribe();
-  //     };
-  //   }
-  // }, [connected]);
-  
-
   const handleCategoryChange = (newCategory) => {
     const newParams = new URLSearchParams(searchParams);
     newParams.set('category', newCategory);
@@ -58,6 +43,7 @@ const DashboardPage = () => {
       <div className={`flex-1 transition-all duration-100 ${isSidebarOpen ? "ml-72" : "mr-0"}`}>
         {select === 'my' && <UserBoards />}
         {select === 'search' && <Searcher />}
+        {select === 'groups' && <GroupsPage />}
       </div>
       <AnimatePresence>
         {isSidebarOpen && (

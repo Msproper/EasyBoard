@@ -7,8 +7,11 @@ const websocketSlice = createSlice({
     subscriptions: {},
   },
   reducers: {
-    setConnected: (state, action) => {
-      state.connected = action.payload;
+    setConnected: (state) => {
+      state.connected = true;
+    },
+    setDisconnected: (state) => {
+      state.connected = false
     },
     addSubscription: (state, action) => {
       const { channel, callback } = action.payload;
@@ -23,5 +26,5 @@ const websocketSlice = createSlice({
   }
 });
 
-export const { setConnected, addSubscription, removeSubscription, clearSubscriptions } = websocketSlice.actions;
+export const { setConnected, addSubscription, removeSubscription, clearSubscriptions, setDisconnected } = websocketSlice.actions;
 export default websocketSlice.reducer;

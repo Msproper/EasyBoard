@@ -1,6 +1,5 @@
 package com.easygame.easygame.enums;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -10,8 +9,8 @@ import org.springframework.data.domain.Sort;
 public enum SearchSort {
     TITLE_ASC(Sort.by(Sort.Direction.ASC, "title")),
     TITLE_DESC(Sort.by(Sort.Direction.DESC, "title")),
-    CREATEAT_ASC(Sort.by(Sort.Direction.ASC, "createAt")),
-    CREATEAT_DESC(Sort.by(Sort.Direction.DESC, "createAt")),
+    CREATEDAT_ASC(Sort.by(Sort.Direction.ASC, "createdAt")),
+    CREATEDAT_DESC(Sort.by(Sort.Direction.DESC, "createdAt")),
     UPDATEAT_ASC(Sort.by(Sort.Direction.ASC, "updateAt")),
     UPDATEAT_DESC(Sort.by(Sort.Direction.DESC, "updateAt"));
 

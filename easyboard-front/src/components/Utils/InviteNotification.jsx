@@ -54,7 +54,7 @@ const InviteNotification = ({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: 100 }}
       transition={{ duration: 0.3 }}
-      className="w-80 bg-white rounded-lg shadow-lg overflow-hidden border mb-2"
+      className="w-120 bg-white rounded-lg shadow-lg overflow-hidden border mb-2"
     >
       <div className="h-1 bg-gray-200">
         <motion.div

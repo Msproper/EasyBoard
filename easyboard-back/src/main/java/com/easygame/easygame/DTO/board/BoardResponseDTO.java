@@ -4,9 +4,14 @@ import com.easygame.easygame.model.BoardModel;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @Schema(description = "Ответ на запросы по доске")
 @Getter
 @AllArgsConstructor
+@Setter
+@NoArgsConstructor
 public class BoardResponseDTO {
     @Schema(description = "ID доски", example = "1")
     private Long id;
@@ -20,19 +25,22 @@ public class BoardResponseDTO {
     private String description;
     @Schema(description = "Имя создателя доски", example = "Urii")
     private String owner;
-    @Schema(description = "Является ли юзер участником доски", example = "true")
-    private Boolean isMember = false;
+    @Schema(description = "Есть ли доступ", example = "true")
+    private Boolean isAccess = false;
     @Schema(description = "Является ли юзер заблокированным в доске", example = "true")
     private Boolean isBlocked = false;
-    public BoardResponseDTO(BoardModel boardModel, boolean isMember, boolean isBlocked) {
+    @Schema(description = "Путь к изображению", example = "photo.img")
+    private String imageUrl;
+    public BoardResponseDTO(BoardModel boardModel, boolean isAccess, boolean isBlocked) {
         this.id = boardModel.getId();
         this.createAt = boardModel.getCreatedAt().toString();
         this.updateAt = boardModel.getUpdatedAt().toString();
         this.title = boardModel.getTitle();
         this.description = boardModel.getDescription();
         this.owner = boardModel.getOwner().getUsername();
-        this.isMember = isMember;
+        this.isAccess = isAccess;
         this.isBlocked = isBlocked;
+        this.imageUrl = boardModel.getImageUrl();
     }
 
     public BoardResponseDTO(BoardModel boardModel) {
@@ -42,6 +50,7 @@ public class BoardResponseDTO {
         this.title = boardModel.getTitle();
         this.description = boardModel.getDescription();
         this.owner = boardModel.getOwner().getUsername();
-
+        this.imageUrl = boardModel.getImageUrl();
+        this.isAccess = true;
     }
 }

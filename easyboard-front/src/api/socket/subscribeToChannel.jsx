@@ -8,7 +8,7 @@ export const subscribeToChannel = (store, channel, callback) => {
   const client = getStompClient();
 
   const subscription = client.subscribe(channel, (message) => {
-    callback(JSON.parse(message.body));
+    callback(JSON.parse(message.body), store);
   }, {
     Authorization: `Bearer ${store.getState().auth.token}`
   });
@@ -17,7 +17,6 @@ export const subscribeToChannel = (store, channel, callback) => {
 };
 
 export const unsubscribeFromChannel = (store, channel) => {
-  const client = getStompClient();
   const subscription = store.getState().websocket.subscriptions[channel];
   if (subscription) {
     subscription.unsubscribe();

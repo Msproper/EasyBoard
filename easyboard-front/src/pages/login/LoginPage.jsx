@@ -6,20 +6,23 @@ import { useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import '../../App.css';
 import { loginValidationSchema } from '@/utils/utils';
+import { useSelector } from 'react-redux';
 import { useState } from 'react';
 
 function Login() {
   const [isLogin, setIsLogin] = useState(false);
-  const {isLoading, error} = useUpdateUserQuery();
   const [signUp, { error: signUpError }] = useSignUpMutation();
   const [signIn, { error: signInError }] = useSignInMutation();
+  const user = useSelector((state)=> state.auth.user);
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/dashboard";
 
   useEffect(() => {
-    if (!error) {
-      navigate('/dashboard', { replace: true });
+    if (user) {
+      navigate(from, { replace: true });
     }
-  }, [ navigate]);
+  }, [user, navigate, from]);
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
@@ -28,10 +31,10 @@ function Login() {
           username: values.username, 
           password: values.password 
         }).unwrap();
-        navigate("/dashboard", { replace: true });
+        navigate(from, { replace: true });
       } else {
         await signUp(values).unwrap();
-        navigate("/dashboard", { replace: true });
+        navigate(from, { replace: true });
       }
     } catch (err) {
       console.error('Ошибка:', err);
@@ -40,7 +43,6 @@ function Login() {
     }
   };
 
-  // Объединяем ошибки от бэкенда
   const backendError = signUpError || signInError;
 
   return (

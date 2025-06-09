@@ -6,7 +6,9 @@ import apiReducer from './api/auth/authSlice'
 import boardReducer from './api/board/boardSlice'
 import invitesReducer from './api/invites/inviteSlice'
 import websocketReducer from './api/socket/websocketSlice'
+import notificationReducer from './api/notification/notificationSlice'
 import { inviteApi } from './api/invites/inviteApi';
+import socketMiddleware from './api/middlewares/socketMiddleware';
 
 export const store = configureStore({
   reducer: {
@@ -17,7 +19,8 @@ export const store = configureStore({
     board:boardReducer,
     invites:invitesReducer,
     websocket:websocketReducer,
+    notifications:notificationReducer
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware).concat(boardApi.middleware).concat(inviteApi.middleware), devTools:true,
+    getDefaultMiddleware().concat(authApi.middleware).concat(boardApi.middleware).concat(inviteApi.middleware).concat(socketMiddleware), devTools:true,
 });

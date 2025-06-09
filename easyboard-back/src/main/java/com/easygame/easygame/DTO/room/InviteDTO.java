@@ -2,15 +2,13 @@ package com.easygame.easygame.DTO.room;
 
 import com.easygame.easygame.enums.InviteStatus;
 import com.easygame.easygame.redis.model.Invite;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class
 InviteDTO {
     private InviteStatus status;

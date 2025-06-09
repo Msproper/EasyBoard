@@ -4,8 +4,10 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -28,18 +30,32 @@ public class BoardModel {
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private LocalDate updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_name", nullable = false)
     private UserModel owner;
 
-//    @Column(columnDefinition = "JSONB")
-//    private String data;
+    @Column(name="UUID")
+    private String uuid;
+
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(
+            name = "snapshots_of_board", // Название соединительной таблицы
+            joinColumns = @JoinColumn(name = "board_id"),
+            inverseJoinColumns = @JoinColumn(name = "snapshot_id")
+    )
+    @Builder.Default
+    private Set<SnapshotModel> snapshots = new HashSet<>();
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "autoSaveSnapshotId")
+    private SnapshotModel autoSaveSnapshot;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(
@@ -49,6 +65,7 @@ public class BoardModel {
     )
     @Builder.Default
     private Set<UserModel> members = new HashSet<>();
+
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(
@@ -62,8 +79,12 @@ public class BoardModel {
     @Column(name = "is_public")
     private boolean isPublic;
 
-    @Column(name = "background_image_url")
-    private String backgroundImageUrl;
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    public void addSnapshot(SnapshotModel snapshotModel){
+        snapshots.add(snapshotModel);
+    }
 
     public void addMember(UserModel user) {
         members.add(user);
