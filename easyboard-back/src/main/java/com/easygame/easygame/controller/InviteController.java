@@ -17,7 +17,7 @@ import java.security.Principal;
 public class InviteController {
     private final InviteService roomService;
 
-    @PostMapping("/{boardId}/sendRequest")
+    @PostMapping("/{boardId}/request")
     public ResponseEntity<?> handleGetInvite(
             @PathVariable Long boardId
     ) {
@@ -25,12 +25,11 @@ public class InviteController {
         return new ResponseEntity<>(inviteResponse, HttpStatus.OK);
     }
 
-    @PostMapping("/{boardId}/sendResponse")
+    @PostMapping("/response")
     public ResponseEntity<?> handleBoardUpdate(
-            @PathVariable Long boardId,
             @RequestBody InviteDTO payload
     ) {
-        roomService.returnInviteResponse(boardId, payload);
+        roomService.returnInviteResponse(payload);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

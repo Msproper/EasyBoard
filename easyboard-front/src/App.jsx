@@ -8,10 +8,8 @@ import Layout from './pages/Layout/Layout.jsx';
 import Board from './pages/board.jsx/Board.jsx';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { InviteRoute } from './pages/InviteRoute/InviteRoute.jsx';
 function App() {
-  const token = useSelector((state) => state.auth.token)
-  const user = useSelector((state) => state.auth.user)
-
   useEffect(() => {
     const handleBeforeUnload = () => {
       disconnectStomp(); // аккуратно отключиться
@@ -21,7 +19,6 @@ function App() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, []);
   
-  const connected = useSelector((state) => state.websocket.connected);
   
   return (
     <Router>
@@ -29,7 +26,8 @@ function App() {
         <Route element={<Layout/>}>
           <Route element={<ProtectedRoute/>}>
               <Route path="/dashboard/*" element={<DashboardPage />} />
-              <Route path="/boards/:roomId" element={<Board />} />
+              <Route path="/board/" element={<Board />} />
+              <Route path='/invite/:inviteUuid' element={<InviteRoute></InviteRoute>}></Route>
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path='/' element={<WelcomePage />}/>

@@ -39,7 +39,7 @@ export const Header = () => {
               <AvatarImage src="https://github.com/shadcn.png" />
               <AvatarFallback>MR</AvatarFallback>
             </Avatar>
-            <span className="font-medium">{user.username}</span>
+            <span className="font-medium max-w-[120px] truncate">{user.username}</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-white" align="end">
             <DropdownMenuItem>Настройки</DropdownMenuItem>

@@ -33,6 +33,12 @@ public class AuthController {
     private final AuthenticationService authenticationService;
     private final UserService userService;
 
+    @PostMapping("/anonymous")
+    public ResponseEntity<?> createGuest(HttpServletResponse response){
+        JwtAuthenticationResponse jwtAuthenticationResponse = authenticationService.anonymousSignUp(response);
+        return new ResponseEntity<>(jwtAuthenticationResponse, HttpStatus.CREATED);
+    }
+
     @Operation(summary = "Получение access токена по refresh токену")
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(@CookieValue(name = "refreshToken", required = false) String refreshToken, HttpServletResponse response) {
@@ -43,7 +49,7 @@ public class AuthController {
 
     @Operation(summary = "Выход из аккаунта")
     @PostMapping("/logout")
-    public ResponseEntity<?> refresh(HttpServletResponse response) {
+    public ResponseEntity<?> logout(HttpServletResponse response) {
         authenticationService.deleteCookie(response);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -52,7 +58,7 @@ public class AuthController {
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@RequestBody @Valid SignUpRequest request, BindingResult bindingResult, HttpServletResponse response) {
         if (bindingResult.hasErrors()) throw new ValidationRuntimeException(bindingResult);
-        JwtAuthenticationResponse jwtAuthenticationResponse = authenticationService.signUp(request, response);
+        JwtAuthenticationResponse jwtAuthenticationResponse = authenticationService.signUp(request, response, false);
         return new ResponseEntity<>(jwtAuthenticationResponse, HttpStatus.OK);
     }
 

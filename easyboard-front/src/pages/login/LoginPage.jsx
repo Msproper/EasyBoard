@@ -1,28 +1,42 @@
-import { useEffect, useRef } from 'react';
-import { useSignUpMutation, useSignInMutation, useUpdateUserQuery } from '../../api/auth/authApi';
+import { useEffect, useState } from 'react';
+import { useSignUpMutation, useSignInMutation, useAnonymousSignUpMutation} from '../../api/auth/authApi';
 import { motion } from "framer-motion";
 import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import '../../App.css';
+import { UserIcon} from 'lucide-react';
 import { loginValidationSchema } from '@/utils/utils';
 import { useSelector } from 'react-redux';
-import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { AlertDialog } from './AlertDialog';
 
 function Login() {
+  const [open, setOpen] = useState(false)
   const [isLogin, setIsLogin] = useState(false);
   const [signUp, { error: signUpError }] = useSignUpMutation();
   const [signIn, { error: signInError }] = useSignInMutation();
   const user = useSelector((state)=> state.auth.user);
   const navigate = useNavigate();
-  const location = useLocation();
-  const from = location.state?.from?.pathname || "/dashboard";
+  const { state } = useLocation();
+  const from = state?.from?.pathname || "/dashboard";
+  const [anonymousSignUp] = useAnonymousSignUpMutation()
 
   useEffect(() => {
     if (user) {
       navigate(from, { replace: true });
     }
   }, [user, navigate, from]);
+
+  
+  const handleAnonymousSubmit = async () => {
+    try {
+      await anonymousSignUp().unwrap();
+      navigate(from, { replace: true });
+    } catch (err) {
+      console.error('Ошибка:', err);
+    } 
+  };
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
@@ -138,20 +152,38 @@ function Login() {
             </>
           )}
         </Formik>
+        
+      {/* Добавленная кнопка для гостя */}
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        className="mt-4"
+      >
+        <button
+          onClick={() => setOpen(true)}
+          className="w-full flex items-center justify-center gap-2 border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-medium py-2 px-4 rounded-lg transition-all duration-300"
+        >
+          <UserIcon className="w-5 h-5" />
+          Продолжить как гость
+        </button>
+      </motion.div>
 
-        <p className="text-center text-sm text-gray-500 mt-4">
-          {isLogin ? 'Нет аккаунта?' : 'Уже есть аккаунт?'}{' '}
-          <button
-            type="button"
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-blue-600 hover:underline"
-          >
-            {isLogin ? 'Зарегистрироваться' : 'Войти'}
-          </button>
-        </p>
-      </div>
+      <p className="text-center text-sm text-gray-500 mt-4">
+        {isLogin ? 'Нет аккаунта?' : 'Уже есть аккаунт?'}{' '}
+        <button
+          type="button"
+          onClick={() => setIsLogin(!isLogin)}
+          className="text-blue-600 hover:underline"
+        >
+          {isLogin ? 'Зарегистрироваться' : 'Войти'}
+        </button>
+      </p>
     </div>
-  );
+
+    {/* Модальное окно для гостя */}
+    <AlertDialog open={open} setOpen={setOpen} handleSubmit={handleAnonymousSubmit}></AlertDialog>
+  </div>
+);
 }
 
 

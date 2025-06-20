@@ -22,11 +22,12 @@ const GroupsPage = ()=> {
               <h2 className="text-xl font-semibold">Подключиться по коду</h2>
             </div>
             <Input 
+              className={"bg-white"}
               placeholder="Введите код группы..." 
               value={code}
               onChange={(e) => setCode(e.target.value)}
             />
-            <Button className="mt-4 w-full">Подключиться</Button>
+            <Button className="mt-4 w-full bg-white">Подключиться</Button>
           </div>
 
           {/* Создать группу */}

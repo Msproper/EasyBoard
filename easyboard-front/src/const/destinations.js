@@ -1,2 +1,6 @@
 export const inviteResponseDest = '/users/queue/invite.Response'
 export const inviteRequestDest = '/users/queue/invite.Requests'
+export const authDest = '/auth'
+export const boardDest = '/boards'
+export const invitesDest = '/invites'
+export const fastInviteDest = '/fastConnect'

@@ -7,6 +7,7 @@ import com.easygame.easygame.DTO.board.SnapshotDTO;
 import com.easygame.easygame.DTO.exception.ValidationRuntimeException;
 import com.easygame.easygame.enums.SearchSort;
 import com.easygame.easygame.service.BoardService;
+import com.easygame.easygame.service.SnapshotService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -29,9 +30,10 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final SnapshotService snapshotService;
 
     @Operation(summary = "Создание доски")
-    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping( consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createBlankBoard(
             @RequestPart("data") @Valid BoardRequestDTO boardRequestDTO,
             @RequestPart(value = "photo", required = false) MultipartFile photo
@@ -40,11 +42,23 @@ public class BoardController {
         return new ResponseEntity<>(boardResponseDTO, HttpStatus.CREATED);
     }
 
-
     @Operation(summary = "Получение досок по текущему пользователю")
-    @GetMapping("/")
-    public ResponseEntity<?> getBoards() {
-        List<BoardResponseDTO> boardResponseDTOS = boardService.getBoards();
+    @GetMapping
+    public ResponseEntity<?> getBoards(@RequestParam(required = false) String query,
+                                   @RequestParam(defaultValue = "10") @Min(1) int limit,
+                                   @RequestParam(defaultValue = "0") @Min(0) @Max(100) int page,
+                                   @RequestParam(required = false, defaultValue = "TITLE_ASC") SearchSort sort) {
+        List<BoardResponseDTO> boardResponseDTOS = boardService.getMyBoards(query, limit, page, sort);
+        return new ResponseEntity<>(boardResponseDTOS, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Получение залайканных досок по текущему пользователю")
+    @GetMapping("/liked")
+    public ResponseEntity<?> getLikedBoards(@RequestParam(required = false) String query,
+                                       @RequestParam(defaultValue = "10") @Min(1) int limit,
+                                       @RequestParam(defaultValue = "0") @Min(0) @Max(100) int page,
+                                       @RequestParam(required = false, defaultValue = "TITLE_ASC") SearchSort sort) {
+        List<BoardResponseDTO> boardResponseDTOS = boardService.getMyLikedBoards(query, limit, page, sort);
         return new ResponseEntity<>(boardResponseDTOS, HttpStatus.OK);
     }
 
@@ -52,7 +66,7 @@ public class BoardController {
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateBoard(@PathVariable Long id, @RequestBody @Valid BoardRequestDTO boardRequestDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) throw new ValidationRuntimeException(bindingResult);
-        boardService.update(boardRequestDTO, id);
+        boardService.update(id, boardRequestDTO);
         return new ResponseEntity<>("Успешно изменено", HttpStatus.OK);
     }
 
@@ -74,17 +88,30 @@ public class BoardController {
         return ResponseEntity.ok(boards);
     }
 
-    @PostMapping("/save/{id}")
+    @PostMapping("/{id}/snapshot")
     public ResponseEntity<?> saveSnapshot(@PathVariable Long id, @RequestBody SnapshotDTO snapshotDTO){
-        boardService.saveSnapshot(id,snapshotDTO);
+        snapshotService.saveSnapshot(id,snapshotDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
-    @GetMapping("/snapshot/{id}")
+    @GetMapping("/{id}/snapshot")
     public ResponseEntity<?> getSnapshot(@PathVariable Long id){
-        SnapshotDTO snapshotDTO = boardService.getSnapshot(id);
+        SnapshotDTO snapshotDTO = snapshotService.getSnapshot(id);
         return new ResponseEntity<>(snapshotDTO, HttpStatus.OK);
+    }
+
+
+    @PostMapping("/likes/{boardId}")
+    private ResponseEntity<?> addLike(@PathVariable Long boardId){
+        boardService.likeBoard(boardId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/likes/{boardId}")
+    private ResponseEntity<?> removeLike(@PathVariable Long boardId){
+        boardService.unlikeBoard(boardId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
 

@@ -1,10 +1,10 @@
 spring:
   redis:
-    host: ${REDIS_DB_USER:localhost}
+    host: ${SPRING_REDIS_HOST:localhost}
     port: 6379
     database: 0
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/users_db} # Значение по умолчанию
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/users_db} # Значение по умолчанию
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:admin}
     driver-class-name: org.postgresql.Driver

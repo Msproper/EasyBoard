@@ -12,6 +12,6 @@ import java.util.List;
 
 @Repository
 public interface BoardRepository extends JpaRepository<BoardModel, Long> {
-    List<BoardModel> findByOwner(UserModel owner);
+    List<BoardModel> findByOwnerAndTitleContainingIgnoreCase(UserModel owner,String title, Pageable pageable);
     Page<BoardModel> findByTitleContainingIgnoreCase(String title, Pageable pageable);
 }

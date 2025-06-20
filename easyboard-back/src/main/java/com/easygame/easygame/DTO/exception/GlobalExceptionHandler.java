@@ -16,6 +16,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ExceptionResponse(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
+
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
         return new ResponseEntity<>(new ExceptionResponse("Ошибка:" + " " +e.getMessage()), HttpStatus.BAD_GATEWAY);

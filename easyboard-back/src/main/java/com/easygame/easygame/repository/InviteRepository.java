@@ -2,6 +2,7 @@ package com.easygame.easygame.repository;
 
 import com.easygame.easygame.enums.InviteStatus;
 import com.easygame.easygame.redis.model.Invite;
+import com.easygame.easygame.redis.model.Room;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +18,8 @@ public interface InviteRepository extends CrudRepository<Invite, String> {
         return invite.isPresent() &&
                 invite.get().getStatus() == InviteStatus.PENDING;
     }
+
+    Optional<Invite> findByUuid(String uuid);
 
     // Поиск по получателю
     List<Invite> findBySenderUsernameAndBoard(String sender, String boardId);

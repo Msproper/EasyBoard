@@ -79,7 +79,6 @@ const onInviteResponse = (data, store) => {
 };
 
 const onInviteRequest = (data, store) => {
-  console.log(data)
   if (data.status === inviteStatusTypes.ACCEPTED) {
     store.dispatch(showNotification({type:notificationTypesClasses.SUCCESS, message:"Ваша заявка на доступ к доске "+data.boardTitle+" была принята"}))
     store.dispatch(boardApi.util.invalidateTags(['Boards']))

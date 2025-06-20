@@ -82,6 +82,14 @@ public class BoardModel {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @OneToOne
+    @JoinColumn(name="group_id")
+    private GroupModel group;
+
+    @Column(name = "likes_count")
+    private Integer likesCount = 0;
+
+
     public void addSnapshot(SnapshotModel snapshotModel){
         snapshots.add(snapshotModel);
     }

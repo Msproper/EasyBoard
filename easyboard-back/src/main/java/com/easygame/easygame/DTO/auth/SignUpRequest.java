@@ -4,8 +4,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Data;
 
+import java.util.UUID;
+
+@Builder
 @Data
 @Schema(description = "Запрос на регистрацию")
 public class SignUpRequest {
@@ -25,14 +29,11 @@ public class SignUpRequest {
     @Size(min = 2, max = 255, message = "Длина пароля должна быть не более 255 символов")
     private String password;
 
-//    @Schema(description = "номер телефона", example = "+79788888888")
-//    @Size(min = 4, max = 20, message = "Неправильный номер телефона")
-//    @NotBlank(message = "Номер телефона не может быть пустым")
-//    private String phoneNumber;
-
-//    @Schema(description = "Имя пользователя", example = "Елена")
-//    private String name;
-//
-//    @Schema(description = "Фамилия пользователя", example = "Федько")
-//    private String surname;
+    static public SignUpRequest createAnonymousRequest(){
+        return SignUpRequest.builder()
+                .username("user_"+UUID.randomUUID())
+                .email("blank_email@"+UUID.randomUUID())
+                .password("BLANK_PASSWORD")
+                .build();
+    }
 }

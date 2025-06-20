@@ -1,17 +1,14 @@
 
 
-import Sidebar from "@/components/Sidebar/sidebar";
-import { Searcher } from "@/components/Search/Search";
+import Sidebar from "@/components/Sidebar/Sidebar.jsx";
 import { LayoutList, Star, Search, Users} from 'lucide-react';
 import { useState, useContext, useEffect } from "react";
 import { AppContext } from "@/utils/context";
 import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import UserBoards from "@/components/UserBoards/UserBoards";
-import { subscribeToChannel } from "@/api/socket/subscribeToChannel";
-import { store } from "@/reduxStore";
-import { useSelector } from "react-redux";
 import GroupsPage from "../groups/GroupsPage";
+import MyBoards from "../SearchedPages/MyBoards";
+import ExploreBoards from "../SearchedPages/ExploredBoards";
 
 
 export const categories = [
@@ -23,11 +20,9 @@ export const categories = [
 ];
 
 const DashboardPage = () => {
-  const connected = useSelector((state) => state.websocket.connected);
   const [searchParams, setSearchParams] = useSearchParams();
   const { isSidebarOpen, setSidebarOpen } = useContext(AppContext);
   const [select, onSelect] = useState(searchParams.get('category') || 'my')
-  const {showAlert} = useContext(AppContext)
 
   const handleCategoryChange = (newCategory) => {
     const newParams = new URLSearchParams(searchParams);
@@ -41,8 +36,8 @@ const DashboardPage = () => {
     <div className="flex min-h-screen">
 
       <div className={`flex-1 transition-all duration-100 ${isSidebarOpen ? "ml-72" : "mr-0"}`}>
-        {select === 'my' && <UserBoards />}
-        {select === 'search' && <Searcher />}
+        {select === 'my' && <MyBoards />}
+        {select === 'search' && <ExploreBoards/>}
         {select === 'groups' && <GroupsPage />}
       </div>
       <AnimatePresence>

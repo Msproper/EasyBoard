@@ -1,4 +1,6 @@
-// features/notification/notificationSlice.ts
+
+
+import { v4 as uuidv4 } from 'uuid';
 import { createSlice} from '@reduxjs/toolkit';
 const initialState = [];
 const notificationSlice = createSlice({
@@ -6,7 +8,7 @@ const notificationSlice = createSlice({
   initialState,
   reducers: {
     showNotification: (state, action) => {
-      state.push({ ...action.payload, id: crypto.randomUUID() });
+      state.push({ ...action.payload, id: uuidv4() });
     },
     removeNotification: (state, action) => {
       return state.filter(n => n.id !== action.payload);

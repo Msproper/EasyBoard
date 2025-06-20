@@ -31,7 +31,11 @@ public class BoardResponseDTO {
     private Boolean isBlocked = false;
     @Schema(description = "Путь к изображению", example = "photo.img")
     private String imageUrl;
-    public BoardResponseDTO(BoardModel boardModel, boolean isAccess, boolean isBlocked) {
+    @Schema(description = "Количество лайков", example = "5")
+    private Integer likes;
+    @Schema(description = "Залайкано ли юзером", example = "5")
+    private Boolean isLikedByUser;
+    public BoardResponseDTO(BoardModel boardModel, boolean isAccess, boolean isBlocked, boolean isLikedByUser) {
         this.id = boardModel.getId();
         this.createAt = boardModel.getCreatedAt().toString();
         this.updateAt = boardModel.getUpdatedAt().toString();
@@ -41,9 +45,11 @@ public class BoardResponseDTO {
         this.isAccess = isAccess;
         this.isBlocked = isBlocked;
         this.imageUrl = boardModel.getImageUrl();
+        this.likes = boardModel.getLikesCount();
+        this.isLikedByUser = isLikedByUser;
     }
 
-    public BoardResponseDTO(BoardModel boardModel) {
+    public BoardResponseDTO(BoardModel boardModel, boolean isLikedByUser) {
         this.id = boardModel.getId();
         this.createAt = boardModel.getCreatedAt().toString();
         this.updateAt = boardModel.getUpdatedAt().toString();
@@ -52,5 +58,7 @@ public class BoardResponseDTO {
         this.owner = boardModel.getOwner().getUsername();
         this.imageUrl = boardModel.getImageUrl();
         this.isAccess = true;
+        this.likes = boardModel.getLikesCount();
+        this.isLikedByUser = isLikedByUser;
     }
 }

@@ -31,13 +31,18 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
+    public JwtAuthenticationResponse anonymousSignUp(HttpServletResponse response){
+        SignUpRequest anonymousRequest = SignUpRequest.createAnonymousRequest();
+        return signUp(anonymousRequest, response, true);
+    }
+
     /**
      * Регистрация пользователя
      *
      * @param request данные пользователя
      * @return токен
      */
-    public JwtAuthenticationResponse signUp(SignUpRequest request, HttpServletResponse response) {
+    public JwtAuthenticationResponse signUp(SignUpRequest request, HttpServletResponse response, boolean isAnonymous) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         String formattedDate = dateFormat.format(new Date());
         var userDetails = UsersDetails.builder().createAt(formattedDate).build();
@@ -47,6 +52,7 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .usersDetails(userDetails)
                 .role(Role.ROLE_USER)
+                .anonymous(isAnonymous)
                 .build();
 
         userService.create(user);

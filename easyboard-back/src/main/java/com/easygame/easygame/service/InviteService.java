@@ -12,154 +12,98 @@ import com.easygame.easygame.redis.model.Room;
 import com.easygame.easygame.repository.BoardRepository;
 import com.easygame.easygame.repository.InviteRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.user.SimpUserRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 
 @Service
 @RequiredArgsConstructor
 public class InviteService {
-    private final SimpUserRegistry simpUserRegistry;
-    private final Long TTL = 30L;
-    private final BoardRepository boardRepository;
-    private final SimpMessagingTemplate messagingTemplate;
-    private final RoomService roomService;
+
+    private final BoardService boardService;
+    private final RoomManager roomManager;
     private final UserService userService;
     private final InviteRepository inviteRepository;
+    private final InviteWebSocketService socketService;
+    private static final Long TTL = 30L;
+    private final Logger logger = LoggerFactory.getLogger(InviteService.class);
 
-    private static final String BOARD_REQUEST_TOPIC = "queue/invite.Requests";
-    private static final String BOARD_RESPONSE_TOPIC = "queue/invite.Response";
-
-    /**
-     *
-     * @param boardId - id доски, для которой создается комната
-     * @return - объект данных, в котором хранится статус и уникальный id комнаты
-     */
     public InviteDTO createPendingInvite(Long boardId) {
         final String sender = userService.getCurrentUser().getUsername();
-        final BoardModel board = findBoardById(boardId);
+
+        final BoardModel board = boardService.findById(boardId);
         final String boardTitle = board.getTitle();
-        final String ownerUsername = board.getOwner().getUsername();
+        final String owner = board.getOwner().getUsername();
 
-        validateNoDuplicateInvite(sender, boardId.toString());
+        if (inviteRepository.existsActiveInvite(sender, boardId.toString())) {
+            throw new DuplicateInviteException("Приглашение уже отправлено. Подождите 30 секунд");
+        }
 
-        if (sender.equals(ownerUsername)) {
+        if (sender.equals(owner)) {
             return acceptInvite(board, sender, PermissionLevel.OWNER, boardTitle);
         }
 
         if (board.isUserBanned(userService.getCurrentUser())) {
-            InviteDTO invite = new InviteDTO();
-            invite.setStatus(InviteStatus.BANNED);
-            invite.setBoardTitle(boardTitle);
-            return invite;
+            return InviteDTO.banned(sender, boardTitle);
         }
 
         if (board.isUserMember(userService.getCurrentUser())) {
             return acceptInvite(board, sender, PermissionLevel.EDITOR, boardTitle);
         }
-        return sendAccessRequest(board,boardTitle, sender);
+
+        return sendAccessRequest(board, boardTitle, sender);
     }
 
-    public void addFastMember(BoardModel board){
-        UserModel user = userService.getCurrentUser();
-        if (!board.getMembers().contains(user)) {
-            board.addMember(user);
-        }
-    }
-
-    public void returnInviteResponse(Long boardId, InviteDTO invite){
-        String senderUsername = invite.getSender();
+    public void returnInviteResponse(InviteDTO inviteDTO) {
+        final Invite invite = inviteRepository.findById(inviteDTO.getId()).orElseThrow(()-> new NotFoundException("Указанное приглашение не найдено"));
+        String senderUsername = inviteDTO.getSender();
         UserModel sender = userService.getByUsername(senderUsername);
-        BoardModel board = findBoardById(boardId);
-        switch (invite.getStatus()){
-            case ACCEPTED -> {
-                invite.setUuid(
-                        roomService.createOrUpdateRoom(board, senderUsername, PermissionLevel.EDITOR));
-                if (!board.getMembers().contains(sender)) {
-                    board.addMember(sender);
-                }
-                boardRepository.save(board);
-            }
-            case BANNED -> {
-                board.addBannedUser(sender);
-                boardRepository.save(board);
-            }
+        Long boardId = invite.getBoardId();
+        BoardModel board = boardService.findById(boardId);
+
+        switch (inviteDTO.getStatus()) {
+            case ACCEPTED -> handleAcceptedInvite(board, sender, inviteDTO);
+            case BANNED -> handleBannedInvite(board, sender);
         }
+        Room room = roomManager.findRoom(boardId.toString());
         inviteRepository.deleteById(invite.getId());
-        notifyAdmins(boardId.toString(), invite);
-        messagingTemplate.convertAndSendToUser(senderUsername, BOARD_RESPONSE_TOPIC, invite);
+        socketService.notifyAdminsAndOwner(room, board.getOwner().getUsername(), inviteDTO);
+        socketService.respondToSender(senderUsername, inviteDTO);
     }
 
-    /**
-     * Метод поиска доски по указанному id
-     *
-     * @param boardId - id доски
-     * @return - найденная доска
-     */
-    private BoardModel findBoardById(Long boardId) {
-        return boardRepository.findById(boardId)
-                .orElseThrow(() -> new NotFoundException("Указанная доска не была найдена"));
+    private void handleAcceptedInvite(BoardModel board, UserModel sender, InviteDTO invite) {
+        invite.setUuid(roomManager.upsertRoom(board, sender.getUsername(), PermissionLevel.EDITOR));
+        boardService.addMember(sender, board);
     }
 
-    /**
-     *
-     * @param sender - отправитель
-     * @param boardId - id доски
-     */
-    private void validateNoDuplicateInvite(String sender, String boardId) {
-        if (inviteRepository.existsActiveInvite(sender, boardId)) {
-            throw new DuplicateInviteException("Вы уже отправили приглашение. Дождитесь ответа или попробуйте через 30 секунд");
-        }
+    private void handleBannedInvite(BoardModel board, UserModel sender) {
+        logger.warn("ADDBAN");
+        boardService.addBan(sender,board);
     }
 
     private InviteDTO acceptInvite(BoardModel board, String username, PermissionLevel level, String boardTitle) {
-        String uuid = roomService.createOrUpdateRoom(board, username, level);
-        return new InviteDTO(InviteStatus.ACCEPTED, username,boardTitle,"",LocalDateTime.now().toString(),board.getId().toString(), uuid);
+        String uuid = roomManager.upsertRoom(board, username, level);
+        return InviteDTO.accepted(username, boardTitle, uuid);
     }
 
-    private InviteDTO sendAccessRequest(BoardModel board,String boardTitle,  String sender) {
-        final String boardId = board.getId().toString();
-        final String ownerUsername = board.getOwner().getUsername();
-        final String id = Invite.generateId(sender, boardId);
+    private InviteDTO sendAccessRequest(BoardModel board, String boardTitle, String sender) {
 
-        // Можно добавить сохранение invite, если оно нужно
         Invite invite = new Invite(
-                id,
+                Invite.generateId(sender, board.getId().toString()),
                 TTL,
-                boardTitle,
                 InviteStatus.PENDING,
                 sender,
-                boardId,
-                LocalDateTime.now().toString()
+                board.getId()
         );
+        InviteDTO inviteDTO = InviteDTO.pending(sender, boardTitle, invite.getId());
         inviteRepository.save(invite);
-
-        InviteDTO inviteDTO = new InviteDTO(invite);
-
-        notifyAdmins(boardId, inviteDTO);
-
-        messagingTemplate.convertAndSendToUser(ownerUsername, BOARD_REQUEST_TOPIC, inviteDTO);
-
-
+        Room room = roomManager.findRoom(board.getId().toString());
+        if (room == null) socketService.sendInviteToOwner(board.getOwner().getUsername(), inviteDTO);
+        else socketService.notifyAdminsAndOwner(room, board.getOwner().getUsername(), inviteDTO);
         return inviteDTO;
     }
-
-    private void notifyAdmins(String boardId, InviteDTO payload) {
-        Room room = roomService.findRoom(boardId);
-        if (room == null) return;
-
-        room.getMembers().entrySet().stream()
-                .filter(entry -> entry.getValue() == PermissionLevel.ADMIN)
-                .forEach(entry -> messagingTemplate.convertAndSendToUser(
-                        entry.getKey(),
-                        BOARD_REQUEST_TOPIC,
-                        payload
-                ));
-    }
-
-
 }
+
+

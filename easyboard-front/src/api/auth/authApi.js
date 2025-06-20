@@ -1,6 +1,7 @@
 import { createApi} from '@reduxjs/toolkit/query/react';
 import { setUser, logout } from './authSlice';
 import { baseQueryWithReauth } from '../baseQuery';
+import { authDest } from '@/const/destinations';
 
 
 
@@ -10,21 +11,27 @@ export const authApi = createApi({
   endpoints: (builder) => ({
     signUp: builder.mutation({
       query: (userData) => ({
-        url: '/api/auth/sign-up',
+        url: `${authDest}/sign-up`,
         method: 'POST',
         body: userData,
       }),
     }),
     signIn: builder.mutation({
       query: (credentials) => ({
-        url: '/api/auth/sign-in',
+        url: `${authDest}/sign-in`,
         method: 'POST',
         body: credentials,
       }),
     }),
+    anonymousSignUp: builder.mutation({
+      query: () => ({
+        url: `${authDest}/anonymous`,
+        method: 'POST',
+      }),
+    }),
     updateUser: builder.query({
       query: () => ({
-        url: '/api/auth/update',
+        url: `${authDest}/update`,
         method: 'GET',
       }),
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
@@ -38,7 +45,7 @@ export const authApi = createApi({
     }),
     logoutUser: builder.mutation({
       query:()=>({
-        url: '/api/auth/logout',
+        url: `${authDest}/logout`,
         method: 'POST',
       }), 
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
@@ -58,4 +65,5 @@ export const {
   useSignInMutation,
   useUpdateUserQuery,
   useLogoutUserMutation,
+  useAnonymousSignUpMutation,
 } = authApi;

@@ -62,10 +62,19 @@ export default function CreateBoardDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Card className="group cursor-pointer rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-lg transition-shadow duration-300">
-          <CardContent className="flex flex-col items-center justify-center p-4 text-center">
-            <Plus className="w-8 h-8 mb-2 text-gray-500" />
-            <span className="text-sm text-gray-700">Новая доска</span>
+        <Card className="group cursor-pointer rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-lg transition-shadow duration-300 h-full">
+          <div className="relative aspect-video w-full overflow-hidden bg-gray-100">
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+              <Plus className="w-8 h-8 text-gray-500" />
+              <span className="text-sm text-gray-700">Новая доска</span>
+            </div>
+          </div>
+          <CardContent className="p-4 space-y-2">
+            <h3 className="text-lg font-semibold truncate">Создать новую доску</h3>
+            <div className="flex items-center gap-1 text-xs text-gray-400">
+              <Plus className="w-4 h-4" />
+              <span>Нажмите, чтобы создать</span>
+            </div>
           </CardContent>
         </Card>
       </DialogTrigger>

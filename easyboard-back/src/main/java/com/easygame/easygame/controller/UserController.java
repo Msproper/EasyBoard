@@ -9,30 +9,27 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
 
     @Operation(summary = "Поиск подробных данных юзера по его юзернейму")
-    @GetMapping("/getDetailsByUsername")
+    @GetMapping("/DetailsByUsername")
     private ResponseEntity<?> findUserDetailsByUsername(String username){
-        UsersDetails findedUser = userService.getByUsername(username).getUsersDetails();
-        return new ResponseEntity<>(findedUser, HttpStatus.OK);
+        UsersDetails foundUser = userService.getByUsername(username).getUsersDetails();
+        return new ResponseEntity<>(foundUser, HttpStatus.OK);
     }
 
-    @GetMapping("/getByKeyword")
+    @GetMapping("/ByKeyword")
     private ResponseEntity<?> findUsersByKeyword(String keyword){
-        var findedUsers = userService.getUsersByKeyword(keyword);
-        return new ResponseEntity<>(findedUsers, HttpStatus.OK);
+        var foundUsers = userService.getUsersByKeyword(keyword);
+        return new ResponseEntity<>(foundUsers, HttpStatus.OK);
     }
 
     @Operation(summary = "Поиск подробных данных самого юзера")
@@ -47,4 +44,5 @@ public class UserController {
         userService.setDetails(detailsRequest);
         return new ResponseEntity<>( HttpStatus.OK);
     }
+
 }

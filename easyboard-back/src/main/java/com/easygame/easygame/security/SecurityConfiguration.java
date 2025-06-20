@@ -36,6 +36,11 @@ public class SecurityConfiguration {
                     var corsConfiguration = new CorsConfiguration();
                     corsConfiguration.setAllowedOriginPatterns(List.of("*"));
                     corsConfiguration.addAllowedOrigin("http://localhost:5173");
+                    corsConfiguration.addAllowedOrigin("http://localhost:3000");
+                    corsConfiguration.addAllowedOrigin("http://localhost");
+                    corsConfiguration.addAllowedOrigin("http://83.222.24.96/");
+
+                    corsConfiguration.addAllowedOrigin("http://localhost");
                     corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     corsConfiguration.setAllowedHeaders(List.of("*"));
                     corsConfiguration.setAllowCredentials(true);

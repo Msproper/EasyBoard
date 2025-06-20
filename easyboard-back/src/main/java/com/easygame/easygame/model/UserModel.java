@@ -42,10 +42,27 @@ public class UserModel implements UserDetails {
     @Column(name = "avatar")
     private String avatar;
 
+    @ManyToMany(mappedBy = "members")
+    private Set<GroupModel> memberGroups = new HashSet<>();
 
-    @OneToOne(cascade = CascadeType.ALL) // Каскадирование всех операций (insert, update, delete)
-    @JoinColumn(name = "details_id", referencedColumnName = "id") // Внешний ключ на таблицу UserDetails
+    @OneToMany(mappedBy = "host")
+    private Set<GroupModel> hostedGroups = new HashSet<>();
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "details_id", referencedColumnName = "id")
     private UsersDetails usersDetails;
+
+    @Column(name="isGuest")
+    private Boolean anonymous;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinTable(
+            name = "user_liked_boards",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "board_id")
+    )
+    private Set<BoardModel> likedBoards = new HashSet<>();
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

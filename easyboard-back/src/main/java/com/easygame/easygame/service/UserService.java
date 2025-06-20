@@ -3,6 +3,7 @@ package com.easygame.easygame.service;
 import com.easygame.easygame.DTO.UserInfoResponse;
 import com.easygame.easygame.DTO.auth.DetailsRequest;
 import com.easygame.easygame.DTO.auth.UpdateResponse;
+import com.easygame.easygame.model.BoardModel;
 import com.easygame.easygame.model.UserModel;
 import com.easygame.easygame.model.UsersDetails;
 import com.easygame.easygame.repository.UserDetailsRepository;
@@ -44,6 +45,8 @@ public class UserService {
                 .limit(25)
                 .map(UserInfoResponse::new).toList();
     }
+
+
 
     public void setDetails(DetailsRequest detailsRequest){
         var userDetails = getCurrentUser().getUsersDetails();

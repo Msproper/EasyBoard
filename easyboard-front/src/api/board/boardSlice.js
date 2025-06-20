@@ -1,63 +1,37 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  boards: [], 
+  boardId: null,
+  boardUuid: null,
 };
 
 const boardSlice = createSlice({
   name: 'board',
   initialState,
   reducers: {
-    setBoards: (state, action) => {
-      state.boards = action.payload;
+    setBoard: (state, action) => {
+      state.boardId = action.payload.boardId;
+      state.boardUuid = action.payload.boardUuid;
+      localStorage.setItem('board', JSON.stringify(state)); 
     },
-    
-    addBoards: (state, action) => {
-      if (state.boards === null) {
-        state.boards = action.payload;
-      } else {
-        state.boards.push(...action.payload);
-      }
-    },
-    
-    addBoard: (state, action) => {
-      if (state.boards === null) {
-        state.boards = [action.payload];
-      } else {
-        state.boards.push(action.payload);
-      }
-    },
-    
-    removeBoard: (state, action) => {
-      if (state.boards !== null) {
-        state.boards = state.boards.filter(board => board.id !== action.payload);
-      }
-    },
-    
-    updateBoard: (state, action) => {
-      if (state.boards !== null) {
-        const index = state.boards.findIndex(b => b.id === action.payload.id);
-        if (index !== -1) {
-          state.boards[index] = { ...state.boards[index], ...action.payload };
-        }
-      }
-    },
-    
-    clearBoards: (state) => {
-      state.boards = null; 
+    unsetBoard:(state) =>{
+      state = initialState;
+      localStorage.removeItem("board")
     }
   },
 });
 
 
 export const { 
-  setBoards, 
-  addBoards, 
-  addBoard, 
-  removeBoard, 
-  updateBoard, 
-  clearBoards 
+  setBoard,
+  unsetBoard
 } = boardSlice.actions;
 
 export default boardSlice.reducer;
 
+const storedBoard = localStorage.getItem('board');
+if (storedBoard) {
+  const parsedBoard = JSON.parse(storedBoard);
+  initialState.boardId = parsedBoard.boardId
+  initialState.boardUuid = parsedBoard.boardUuid
+}

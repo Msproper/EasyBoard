@@ -1,5 +1,6 @@
 package com.easygame.easygame.controller;
 
+import com.easygame.easygame.DTO.room.RoomPermissionDTO;
 import com.easygame.easygame.enums.PermissionLevel;
 import com.easygame.easygame.service.RoomService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,13 @@ public class RoomController {
     private final RoomService roomService;
     @GetMapping("/userPermission/{uuid}")
     public ResponseEntity<?> getUserPermission(@PathVariable String uuid){
-        PermissionLevel level = roomService.getPermissionLevel(uuid);
-        return new ResponseEntity<>(level, HttpStatus.OK);
+        RoomPermissionDTO roomPermissionDTO = roomService.getPermissionLevel(uuid);
+        return new ResponseEntity<>(roomPermissionDTO, HttpStatus.OK);
+    }
+
+    @PostMapping("/userPermission/{uuid}")
+    public ResponseEntity<?> setUserPermission(@PathVariable String uuid, @RequestBody RoomPermissionDTO roomPermissionDTO){
+        roomService.updatePermissionLevel(uuid, roomPermissionDTO);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

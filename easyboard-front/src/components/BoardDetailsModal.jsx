@@ -98,7 +98,7 @@ export const BoardDetailsModal = ({ board, open, onClose, onGoToUser, onJoinBoar
                   
                   <button
                     onClick={() => onJoinBoard?.(board.id)}
-                    className={`px-4 py-2 rounded-lg ${board.isAccess ? 'bg-green-500' : 'bg-blue-500'} text-white hover:bg-blue-700 transition`}
+                    className={`px-4 py-2 rounded-lg ${board.isAccess ? 'bg-green-500 hover:bg-green-700' : 'bg-blue-500 hover:bg-blue-700'} text-white  transition`}
                   >{board.isAccess ? "Войти" : "Запросить доступ"}
                   </button>
                 </div>

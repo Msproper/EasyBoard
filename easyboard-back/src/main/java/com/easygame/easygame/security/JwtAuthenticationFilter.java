@@ -52,6 +52,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // Обрезаем префикс и получаем имя пользователя из токена
             var jwt = authHeader.substring(BEARER_PREFIX.length());
+            if (jwt.startsWith("\"") && jwt.endsWith("\"")) {
+                jwt = jwt.substring(1, jwt.length() - 1);
+            }
             var username = jwtService.extractUserName(jwt);
 
             if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -123,6 +126,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 || path.equals("/api/auth/refresh")
                 || path.startsWith("/swagger-ui")
                 || path.startsWith("/v3/api-docs")
-                || path.startsWith("/ws");
+                || path.startsWith("/ws")
+                || path.equals("/api/auth/anonymous");
     }
 }

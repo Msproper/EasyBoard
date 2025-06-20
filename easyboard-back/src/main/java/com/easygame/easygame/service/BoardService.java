@@ -3,21 +3,16 @@ package com.easygame.easygame.service;
 import com.easygame.easygame.DTO.board.BoardRequestDTO;
 
 import com.easygame.easygame.DTO.board.BoardResponseDTO;
-import com.easygame.easygame.DTO.board.SnapshotDTO;
 import com.easygame.easygame.DTO.exception.FileProcessingException;
 import com.easygame.easygame.DTO.exception.NotFoundException;
 import com.easygame.easygame.DTO.exception.PermissionDeniedException;
 import com.easygame.easygame.enums.SearchSort;
 import com.easygame.easygame.model.BoardModel;
-import com.easygame.easygame.model.SnapshotModel;
 import com.easygame.easygame.model.UserModel;
 import com.easygame.easygame.repository.BoardRepository;
-import com.easygame.easygame.repository.SnapshotRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.mapping.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,122 +20,171 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Stream;
 
 
 @Service
 @RequiredArgsConstructor
 public class BoardService {
+
     private final BoardRepository boardRepository;
     private final UserService userService;
     private final FileService fileService;
-    private static final Logger logger = LoggerFactory.getLogger(BoardService.class);
+    private final Logger logger = LoggerFactory.getLogger(BoardService.class);
 
-    private BoardModel save(BoardModel board) {
-        return boardRepository.save(board);
-    }
+    public BoardResponseDTO create(BoardRequestDTO request, MultipartFile photo) {
+        String filename = processPhoto(photo);
+        UserModel currentUser = userService.getCurrentUser();
 
-    public BoardResponseDTO create(BoardRequestDTO boardRequestDTO, MultipartFile photo){
-        String filename = processUploadedPhoto(photo);
-
-        var board = BoardModel.builder()
-                .title(boardRequestDTO.getTitle())
-                .description(boardRequestDTO.getDescription())
-                .isPublic(boardRequestDTO.getIsPublic())
-                .owner(userService.getCurrentUser())
+        BoardModel board = BoardModel.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .isPublic(request.getIsPublic())
+                .owner(currentUser)
                 .imageUrl(filename)
                 .uuid(UUID.randomUUID().toString())
+                .likesCount(0)
                 .build();
-        logger.info("Доска {} успешно создана", boardRequestDTO.getTitle());
-        return new BoardResponseDTO(save(board));
+
+        BoardModel saved = save(board);
+        logger.info("Доска '{}' создана пользователем '{}'", request.getTitle(), currentUser.getUsername());
+
+        return new BoardResponseDTO(saved, currentUser.getLikedBoards().contains(saved));
     }
 
-    public void saveSnapshot(Long boardId, SnapshotDTO snapshotDTO){
-        BoardModel board = findById(boardId);
-        board.setAutoSaveSnapshot(new SnapshotModel(snapshotDTO));
+    public void update(Long boardId, BoardRequestDTO request) {
+        BoardModel board = findBoardOwnedByCurrentUser(boardId);
+
+        board.setTitle(request.getTitle());
+        board.setDescription(request.getDescription());
+        board.setPublic(request.getIsPublic());
+
         save(board);
     }
 
-    public BoardModel findById(long id){
-        return boardRepository.findById(id).orElseThrow(()->new NotFoundException("Указанная доска не найдена"));
+    public void delete(Long boardId) {
+        BoardModel board = findBoardOwnedByCurrentUser(boardId);
+        boardRepository.delete(board);
     }
 
-    private String processUploadedPhoto(MultipartFile photo) {
-        if (photo == null || photo.isEmpty()) {
-            return null;
+    public List<BoardResponseDTO> getMyBoards(String query, int limit, int page, SearchSort sort) {
+        Pageable pageable = PageRequest.of(page, limit, sort.getSortValue());
+        UserModel currentUser = userService.getCurrentUser();
+        var likedBoard = currentUser.getLikedBoards();
+        return boardRepository.findByOwnerAndTitleContainingIgnoreCase(currentUser, query,pageable)
+                .stream()
+                .map(boardModel -> new BoardResponseDTO(boardModel, likedBoard.contains(boardModel)))
+                .toList();
+    }
+
+    public List<BoardResponseDTO> getMyLikedBoards(String query, int limit, int page, SearchSort sort) {
+            UserModel currentUser = userService.getCurrentUser();
+            Set<BoardModel> likedBoards = currentUser.getLikedBoards();
+
+            // Фильтрация по query (если query не пустой)
+            Stream<BoardModel> filteredStream = likedBoards.stream()
+                    .filter(board -> query == null || query.isEmpty() ||
+                            board.getTitle().toLowerCase().startsWith(query.toLowerCase()));
+
+            // Сортировка
+            filteredStream = switch (sort) {
+                case TITLE_ASC -> filteredStream.sorted(Comparator.comparing(BoardModel::getTitle));
+                case TITLE_DESC -> filteredStream.sorted(Comparator.comparing(BoardModel::getTitle).reversed());
+                case CREATEDAT_ASC -> filteredStream.sorted(Comparator.comparing(BoardModel::getCreatedAt));
+                case CREATEDAT_DESC -> filteredStream.sorted(Comparator.comparing(BoardModel::getCreatedAt).reversed());
+                default -> filteredStream;
+            };
+
+            // Пагинация
+            List<BoardModel> result = filteredStream
+                    .skip((long) page * limit)
+                    .limit(limit)
+                    .toList();
+            return result.stream().map(board -> new BoardResponseDTO(
+                    board,
+                    true
+            )).toList();
+    }
+
+    public List<BoardResponseDTO> searchBoards(String query, int limit, int page, SearchSort sort) {
+        Pageable pageable = PageRequest.of(page, limit, sort.getSortValue());
+        UserModel currentUser = userService.getCurrentUser();
+
+
+        return boardRepository.findByTitleContainingIgnoreCase(query, pageable)
+                .stream()
+                .filter(board -> !board.getOwner().equals(currentUser))
+                .map(board -> new BoardResponseDTO(
+                        board,
+                        board.isUserMember(currentUser),
+                        board.isUserBanned(currentUser),
+                        currentUser.getLikedBoards().contains(board)
+                        ))
+                .toList();
+    }
+
+
+
+    public BoardModel findById(Long id) {
+        return boardRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Указанная доска не найдена"));
+    }
+
+    public void addMember(UserModel user, BoardModel board){
+        if (!board.getMembers().contains(user)) {
+            board.addMember(user);
         }
+        save(board);
+    }
+
+    public void addBan(UserModel user, BoardModel board){
+        if (!board.getBannedUsers().contains(user)) {
+            board.addBannedUser(user);
+        }
+        save(board);
+    }
+
+    private BoardModel save(BoardModel board){
+        return boardRepository.save(board);
+    }
+
+    private BoardModel findBoardOwnedByCurrentUser(Long id) {
+        BoardModel board = findById(id);
+        UserModel currentUser = userService.getCurrentUser();
+
+        if (!board.getOwner().equals(currentUser)) {
+            throw new PermissionDeniedException("Вы не являетесь владельцем этой доски");
+        }
+
+        return board;
+    }
+
+    private String processPhoto(MultipartFile photo) {
+        if (photo == null || photo.isEmpty()) return null;
 
         try {
             return fileService.saveFile(photo);
         } catch (IOException e) {
-            logger.error("Failed to save board photo", e);
-            throw new FileProcessingException("Failed to save board photo", e);
+            logger.error("Ошибка при сохранении изображения доски", e);
+            throw new FileProcessingException("Не удалось сохранить изображение", e);
         }
     }
 
-    public List<BoardResponseDTO> getBoards(){
-        var user = userService.getCurrentUser();
-        var boards = boardRepository.findByOwner(user);
-        return boards.stream().map(BoardResponseDTO::new).toList();
-    }
-
-    public void update(BoardRequestDTO boardRequestDTO, Long id){
-        BoardModel foundBoard = findById(id);
-        if (foundBoard.getOwner().equals(userService.getCurrentUser())){
-            throw new PermissionDeniedException("Нельзя изменять доски, не созданные вами");
-        }
-        foundBoard.setTitle(boardRequestDTO.getTitle());
-        foundBoard.setDescription(boardRequestDTO.getDescription());
-        foundBoard.setPublic(boardRequestDTO.getIsPublic());
-        save(foundBoard);
-    }
-
-
-    /**
-     * Удаление доски по id
-     *
-     * @param id - id доски, которую нужно удалить
-     */
-    public void delete(Long id){
-        BoardModel foundBoard = findById(id);
-        if (foundBoard.getOwner().equals(userService.getCurrentUser())){
-            throw new PermissionDeniedException("Нельзя удалять доски, не созданные вами");
-        }
-        else boardRepository.delete(foundBoard);
-    }
-
-    /**
-     * Метод для поиска досок по заголовку с пагинацией и сортировкой
-     *
-     * @param query Строка поискового запроса
-     * @param limit Количество элементов на странице
-     * @param page Номер страницы (начинается с 0)
-     * @param sort Тип сортировки результатов
-     * @return Список досок в формате DTO, соответствующих критериям поиска
-     */
-    public List<BoardResponseDTO> searchBoards(String query, int limit, int page, SearchSort sort) {
-        Pageable pageable = PageRequest.of(
-                page,
-                limit,
-                sort.getSortValue()
-        );
+    public void likeBoard(Long boardId) {
+        BoardModel board = findById(boardId);
         UserModel user = userService.getCurrentUser();
-
-        return Optional.ofNullable(boardRepository.findByTitleContainingIgnoreCase(query, pageable))
-                .map(result -> result.stream()
-                        .filter(boardModel -> !boardModel.getOwner().equals(user)) // Исключаем доски текущего пользователя
-                        .map(boardModel -> new BoardResponseDTO(
-                                boardModel,
-                                boardModel.isUserMember(user),
-                                boardModel.isUserBanned(user)))
-                        .toList())
-                .orElse(Collections.emptyList());
+        if (user.getLikedBoards().add(board)) {
+            board.setLikesCount(board.getLikesCount() + 1);
+            userService.save(user);
+        }
     }
 
-
-
-    public SnapshotDTO getSnapshot(Long id) {
-        BoardModel foundBoard = findById(id);
-
-        return new SnapshotDTO(foundBoard.getAutoSaveSnapshot());
+    public void unlikeBoard(Long boardId) {
+        BoardModel board = findById(boardId);
+        UserModel user = userService.getCurrentUser();
+        if (user.getLikedBoards().remove(board)) {
+            board.setLikesCount(Math.max(0, board.getLikesCount() - 1));
+            userService.save(user);
+        }
     }
 }

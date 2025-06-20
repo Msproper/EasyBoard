@@ -15,17 +15,30 @@ InviteDTO {
     private String sender;
     private String boardTitle;
     private String id;
-    private String timeStamp;
-    private String boardId;
     private String uuid;
+    public static InviteDTO accepted(String username, String title, String uuid) {
+        return InviteDTO.builder()
+                .status(InviteStatus.ACCEPTED)
+                .sender(username)
+                .boardTitle(title)
+                .uuid(uuid)
+                .build();
+    }
 
+    public static InviteDTO banned(String username, String title) {
+        return InviteDTO.builder()
+                .status(InviteStatus.BANNED)
+                .sender(username)
+                .boardTitle(title)
+                .build();
+    }
 
-    public InviteDTO(Invite invite) {
-        this.boardTitle = invite.getBoardTitle();
-        this.sender = invite.getSenderUsername();
-        this.id = invite.getId();
-        this.status = invite.getStatus();
-        this.timeStamp = invite.getTimestamp().toString();
-        this.boardId = invite.getBoardId();
+    public static InviteDTO pending(String sender, String title, String id) {
+        return InviteDTO.builder()
+                .status(InviteStatus.PENDING)
+                .sender(sender)
+                .boardTitle(title)
+                .id(id)
+                .build();
     }
 }
